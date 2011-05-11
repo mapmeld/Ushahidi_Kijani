@@ -25,7 +25,8 @@ USGS Sensor Layer (United States Geologic Service)
 - Includes realtime and archived data on flood levels, rainfall, and water quality.
 
 Boat Tracking (MarineTraffic.com)
-Add boats and airplanes tracked by various web services.  Example shows boat tracking for several vessels involved in Gulf oil clean-ups in 2010 and 2011.
+- Add boat tracking in most parts of the world
+- Example includes boat tracking in Gulf of Mexico
 
 Custom Scraper
 - Scrape information from a website every 10 minutes and convert it into useful data.
@@ -37,7 +38,8 @@ Custom Geoprocessor
 - Example estimates regions and reports which you could drive to in 1-3 minutes
 
 Custom Archive
-- Link to archived data and archive searches, such as a sensor, Wolfram Alpha data, or news archive
+- Link to archived data and archive searches, such as a sensor or news archive
+- Explains how to connect to Wolfram Alpha data, including weather archives
 
 Tile Rewrite
 - Replace the map with custom tiles from Google, CloudMade, or TileMill.
@@ -72,6 +74,8 @@ Phone Dispatch
 - With a Twilio account, you can start automating responses and reports by voice and SMS
 - This plugin allows users to search the database and add reports without opening a web browser
 
+Cover and Precipitation
+- Importing NOAA forecasts and archived data for rainfall and cloud cover
 
 ==USHAHIDI==
 
