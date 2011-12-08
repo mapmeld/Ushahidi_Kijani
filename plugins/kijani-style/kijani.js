@@ -1,27 +1,36 @@
 javascript:
 function byId(id){return document.getElementById(id)}
+function byClass(nm){return document.getElementsByClassName(nm)}
+var jsonEndpoint = "https://mtsuperfund.crowdmap.com/json";
 /* remove language dropdown */
 byId("searchbox").children[0].style.display="none";
 /* put title on one line */
 byId("logo").children[0].style.display="inline";
-byId("logo").children[0].style.color="white";
-byId("logo").children[1].style.display="inline";
-byId("logo").children[1].style.color="white";
-byId("logo").children[1].style.marginLeft="10px";
+/* byId("logo").children[0].style.color="white"; */
+if(byId("logo").children[1] != null){
+	byId("logo").children[1].style.display="inline";
+	/* byId("logo").children[1].style.color="white"; */
+	byId("logo").children[1].style.marginLeft="10px";
+}
 byId("logo").style.padding="5px";
 byId("logo").style.margin="0px";
-byId("logo").style.backgroundColor="transparent";
+/* byId("logo").style.backgroundColor="transparent"; */
 byId("header").style.height="35pt";
 /* change background and li css */
-byId("page").style.background="#031634 url(../images/terra.gif) 50% 0 repeat-x";
+/* byId("page").style.background="#031634 url(../images/terra.gif) 50% 0 repeat-x"; */
 var licss=document.createElement("div");
 licss.innerHTML="<style type='text/css'>div#mainmenu a.active{color:#fff;background-color:#031634;} div#mainmenu a:hover{color:#fff;background-color:#031634;}ul.category-filters li a:hover, ul.category-filters li a.active{color:#FFF;background-color:#031634;border-color:#031634;}</style>";
 document.body.appendChild(licss);
 /* expand content part of page */
 byId("middle").style.minWidth="116%";
 byId("middle").style.marginLeft="-8%";
-/* remove floating Submit a Report button */
-byId("header").children[2].style.display="none";
+/* remove floating Submit a Report button on new and old versions of Ushahidi and CrowdMap */
+try{
+	byId("header").children[2].style.display="none";
+}
+catch(e){
+	byId("header").children[1].style.display="none";
+}
 /* remove Category Filter label and "hide" option; replace with tabs for populating the new list below */
 byId("right").children[0].className="clearingfix";
 byId("right").children[0].id="mainmenu";
@@ -36,14 +45,21 @@ byId("right").children[1].style.marginLeft="-50%";
 /* add people to the Team section */
 var sampleItem=document.createElement("li");
 sampleItem.innerHTML="<a href='#' class='active' id='cat_"+pnum+"_person'><span class='swatch' style='background-color:#FF0000'></span><span class='category-title'>Everyone</span></a>";
-sampleItem.onclick=function(){
-	people();
-}
+sampleItem.onclick=function(){people()}
 byId("right").children[1].appendChild(sampleItem);
-var people=["Tom","Barry"];
+var people=[
+	{
+		name: "Nick",
+		twitter: "mapmeld"
+	},
+	{
+		name: "Barry",
+		twitter: "BarackObama"
+	}
+];
 for(var pnum=0;pnum<people.length;pnum++){
 	sampleItem=document.createElement("li");
-	sampleItem.innerHTML="<a href='#' id='cat_"+pnum+"_person'><span class='swatch' style='background-color:#3300FF'></span><span class='category-title'>"+people[pnum]+"</span></a>";
+	sampleItem.innerHTML="<a href='#' id='cat_"+pnum+"_person'><span class='swatch' style='background-color:#3300FF'><img src='" +  + "'/></span><span class='category-title'>"+people[pnum].name+"</span></a>";
 	sampleItem.onclick=function(){
 		people(this);
 	}
@@ -103,10 +119,226 @@ for(var control=0;control<map.controls.length;control++){
 		break;
 	}
 }
+
 /* remove media type filters above the OpenLayers map */
 byId("content").children[0].children[0].style.display="none";
-/* prepend Facebook comments (?) to content-block-left */
-document.getElementsByClassName("content-block-left")[0].innerHTML = 'Facebook Commenting<hr/><hr/>' + document.getElementsByClassName("content-block-left")[0].innerHTML;
+
 /* add Kijani to footer credits */
-document.getElementsByClassName("footer-credits")[0].innerHTML+="<br/>And the &nbsp;<a href='http://kijani-map.appspot.com/'><img src='http://kijani-map.appspot.com/credit.png' alt='Kijani' style='vertical-align:middle'></a>&nbsp; Plugin";
+try{
+	byClass("footer-credits")[0].innerHTML+="<br/>And the &nbsp;<a href='http:/" + "/kijani-map.appspot.com/'><img src='http:/" + "/kijani-map.appspot.com/credit.png' alt='Kijani' style='vertical-align:middle'></a>&nbsp; Plugin";
+}
+catch(e){
+	// for older and customized builds
+	document.write("<br/>And the &nbsp;<a href='http:/" + "/kijani-map.appspot.com/'><img src='http:/" + "/kijani-map.appspot.com/credit.png' alt='Kijani' style='vertical-align:middle'></a>&nbsp; Plugin");
+}
+
+/* prepend Facebook comments (?) to content-block-left
+byClass("content-block-left")[0].innerHTML = 'Facebook Commenting<hr/><hr/>' + byClass("content-block-left")[0].innerHTML; */
+
+/* CROWDMAP test - add Facebook comments to renamed class area */
+byClass("content-block")[0].innerHTML = 'Facebook Commenting<hr/><hr/>' + byClass("content-block")[0].innerHTML;
+
+/* CROWDMAP test - remove box around search tool */
+byId("searchbox").style.border = "none";
+byId("searchbox").style.borderTop = "none";
+byId("searchbox").style.border = "none";
+byId("searchbox").style.background = "transparent";
+byId("searchbox").style.border = "none";
+byId("searchbox").style.marginBottom = "20px";
+byId("searchbox").style.marginTop = "-14px";
+
+/* remove the old style timeline */
+byClass("slider-holder")[0].style.display = "none";
+byClass("tickLabels")[0].style.display = "none"; // and repeat this instead of redrawing tickmarks
+/* byId("graph").innerHTML = ""; */
+/* TODO : draw a new timeline based on a new model
+TODO : intercept timeline events, if they still get created */
+var events = [
+	{
+		name: "Mine opened",
+		details: "The mine was opened in 1955 and operated by Anaconda Copper and later by the Atlantic Richfield Company (ARCO) (CC-BY-SA Wikipedia and contributors)",
+		time: new Date(1955,1,1)
+	},
+	{
+		name: "Listed on EPA's NPL",
+		details: "Listed on the Environmental Protection Agency's National Priorities List",
+		time: new Date(1982,9,8)
+	},
+	{
+		name: "Geese land in Berkeley Pit",
+		details: "Flock of birds dies in Berkeley Pit <a href='http://www.hcn.org/issues/49/1520' target='_blank'>http://www.hcn.org/issues/49/1520</a>",
+		time: new Date(1995,11,14)
+	},
+	{
+		name: "Next update",
+		details: "Test of future dates",
+		time: new Date(2012,1,1)
+	},
+	{
+		name: "Future update",
+		details: "Test of even more future dates",
+		time: new Date(2015,6,3)
+	}
+];
+function refreshGraph(startDate, endDate){
+	this.layer = map.layers[3];
+
+	var currentCat = gCategoryId;
+
+	// refresh graph
+	if (!currentCat || currentCat == '0')
+	{
+		currentCat = '0';
+	}
+
+	var startTime = new Date(startDate * 1000);
+	var endTime = new Date(endDate * 1000);
+	var prevEvents = 0;
+	var futureEvents = 0;
+	for(var e=0; e<events.length; e++){
+		if(events[e].time.getTime() < startTime.getTime()){
+			prevEvents++;
+		}
+		else if(events[e].time.getTime() > endTime.getTime()){
+			futureEvents++;
+		}
+	}
+	var centralWidth = 573 - Math.min(150, 20 * (prevEvents + futureEvents));
+	var centralOffset = Math.round((573 - centralWidth) * (prevEvents / (prevEvents + futureEvents)));
+	var centralTrail = Math.round((573 - centralWidth) * (futureEvents / (prevEvents + futureEvents)));
+	var msperpix = Math.round((endTime.getTime() - startTime.getTime()) / centralWidth);
+	if(prevEvents + futureEvents > 0){
+		startTime = new Date(startTime.getTime() - msperpix * centralOffset);
+		endTime = new Date(endTime.getTime() + msperpix * centralTrail);
+		startDate = (startTime.getTime() / 1000) + "";
+		endDate = (endTime.getTime() / 1000) + "";	
+	}
+
+	var graphData = "";
+	byId("graph").children[0].width = byId("graph").children[0].width;
+	var ctx = byId("graph").children[0].getContext('2d');
+	// draw background
+	ctx.fillStyle = "#ECF1EF";
+	ctx.fillRect(0,0,573,150);
+	// draw gridlines
+	ctx.strokeStyle = "#CCC1FF";
+	ctx.lineWidth = 2;
+	ctx.moveTo(0,20);
+	ctx.lineTo(573,20);
+	ctx.moveTo(0,40);
+	ctx.lineTo(573,40);
+	ctx.moveTo(0,60);
+	ctx.lineTo(573,60);
+	ctx.moveTo(0,80);
+	ctx.lineTo(573,80);
+	ctx.moveTo(0,100);
+	ctx.lineTo(573,100);
+	ctx.moveTo(0,120);
+	ctx.lineTo(573,120);
+	ctx.moveTo(0,140);
+	ctx.lineTo(573,140);
+	ctx.stroke();
+
+	$.getJSON(jsonEndpoint + "/timeline/"+currentCat+"?i=week", function(data) {
+		graphData = data[0];
+		var kigraphData = graphData.data;
+		var max = 1;
+		for(var gpt=0; gpt < kigraphData.length; gpt++){
+			if(kigraphData[gpt][1] * 1 > max){
+				max = kigraphData[gpt][1] * 1;
+			}
+		}
+		
+		// test to highlight
+		ctx.beginPath();
+		ctx.strokeStyle = "#CC6C6C";
+		ctx.lineWidth = 2;
+		ctx.moveTo(Math.round(centralOffset), 152);
+		for(var gpt=0; gpt < kigraphData.length; gpt++){
+			var timestamp = kigraphData[gpt][0];
+			var height = Math.round(152 - kigraphData[gpt][1] / max * 140);
+			ctx.lineTo( Math.round((timestamp - startTime) / msperpix), height );
+			ctx.stroke();
+			ctx.moveTo( Math.round((timestamp - startTime) / msperpix), height );
+		}
+		ctx.lineTo(Math.round(573 - centralTrail), 138);
+		ctx.closePath();
+		ctx.beginPath();
+		ctx.moveTo(Math.round(centralOffset), 148);
+		for(var gpt=0; gpt < kigraphData.length; gpt++){
+			var timestamp = kigraphData[gpt][0];
+			var height = Math.round(148 - kigraphData[gpt][1] / max * 140);
+			ctx.lineTo( Math.round((timestamp - startTime) / msperpix), height );
+			ctx.stroke();
+			ctx.moveTo( Math.round((timestamp - startTime) / msperpix), height );
+		}
+		ctx.lineTo(Math.round(573 - centralTrail), 134);
+		ctx.closePath();
+		// end highlight
+		
+		// begin centerline
+		ctx.beginPath();
+		ctx.strokeStyle = "#990000";
+		ctx.fillStyle = "#fff";
+		ctx.lineWidth = 3;
+		ctx.moveTo(Math.round(centralOffset), 150);
+		for(var gpt=0; gpt < kigraphData.length; gpt++){
+			var timestamp = kigraphData[gpt][0];
+			var height = Math.round(150 - kigraphData[gpt][1] / max * 140);
+			ctx.lineTo( Math.round((timestamp - startTime) / msperpix), height );
+			// draw dark red circle
+			ctx.moveTo( Math.round((timestamp - startTime) / msperpix), height );
+			ctx.arc(Math.round((timestamp - startTime) / msperpix), height, 4, 0, Math.PI*2, true);
+			ctx.moveTo( Math.round((timestamp - startTime) / msperpix), height );
+		}
+		ctx.lineTo(Math.round(573 - centralTrail), 148);
+		ctx.moveTo(Math.round(573 - centralTrail), 148);
+		ctx.stroke();
+		ctx.fill();
+		ctx.closePath();
+
+		ctx.beginPath();
+		ctx.strokeStyle = "#6CCC6C";
+		ctx.lineWidth = 5;
+		for(var e=0;e<prevEvents;e++){
+			ctx.strokeStyle = "#009900";
+			ctx.lineWidth = 3;
+			ctx.moveTo(20 * e + 5, 0);
+			ctx.lineTo(20 * e + 5, 150);
+		}
+		// future events
+		ctx.strokeStyle = "#6CCC6C";
+		ctx.lineWidth = 5;
+		for(var e=events.length-1;e>=prevEvents;e--){
+			ctx.moveTo(563 - 20 * (events.length - e - 1), 0);
+			ctx.lineTo(563 - 20 * (events.length - e - 1), 150);
+		}
+		ctx.stroke();
+		ctx.closePath();
+	});
+
+	// Get dailyGraphData for All Categories
+	$.getJSON(jsonEndpoint + "/timeline/"+currentCat+"?i=day", function(data) {
+		dailyGraphData = data[0];
+	});
+
+	// Get allGraphData for All Categories
+	$.getJSON(jsonEndpoint + "/timeline/"+currentCat, function(data) {
+		allGraphData = data[0];
+	});
+}
+var startDate = $("#startDate").val();
+var endDate = $("#endDate").val();						
+refreshGraph(startDate, endDate);
+
+/* remove checkins, if they exist */
+var CIcandidates = byClass("additional-content");
+for(var c=0;c<CIcandidates.length; c++){
+	if(CIcandidates[c].children != null){
+		if(CIcandidates[c].children[0].innerHTML == "Checkins"){
+			CIcandidates[c].style.display = "none";
+			break;
+		}
+	}
+}
 void(0);
