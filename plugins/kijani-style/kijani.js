@@ -1,7 +1,13 @@
 javascript:
 function byId(id){return document.getElementById(id)}
 function byClass(nm){return document.getElementsByClassName(nm)}
+function replaceAll(cont,oldr,newr){while(cont.indexOf(oldr) > -1){cont=cont.replace(oldr,newr);}return cont}
+
 var jsonEndpoint = "https://mtsuperfund.crowdmap.com/json";
+var fbPage = "http://www.facebook.com/ushahidi";
+fbPage = replaceAll(fbPage,"%3A",":");
+fbPage = replaceAll(fbPage,"%2F","/");
+
 /* remove language dropdown */
 byId("searchbox").children[0].style.display="none";
 /* put title on one line */
@@ -44,22 +50,46 @@ byId("right").children[1].innerHTML="";
 byId("right").children[1].style.marginLeft="-50%";
 /* add people to the Team section */
 var sampleItem=document.createElement("li");
-sampleItem.innerHTML="<a href='#' class='active' id='cat_"+pnum+"_person'><span class='swatch' style='background-color:#FF0000'></span><span class='category-title'>Everyone</span></a>";
+sampleItem.innerHTML="<a href='#' class='active' id='cat_everyone'><span class='swatch' style='background-color:#FF0000;height:30px;width:30px;'></span><span class='category-title'>Everyone</span></a>";
 sampleItem.onclick=function(){people()}
 byId("right").children[1].appendChild(sampleItem);
 var people=[
 	{
-		name: "Nick",
-		twitter: "mapmeld"
+		name: "Nick Doiron",
+		twitter: "mapmeld",
+		photo: "http://i.imgur.com/SNcaa.jpg",
+		lastArticle: "Where We Are",
+		lastLink: "http://google.com",
+		lastTime: "2 hours ago",
+		homepage: ""
 	},
 	{
-		name: "Barry",
-		twitter: "BarackObama"
+		name: "Zora Mayer",
+		photo: "http://i.imgur.com/TL1K5.jpg",
+		lastArticle: "Going Green",
+		lastLink: "http://google.com",
+		lastTime: "30 minutes ago"
 	}
 ];
 for(var pnum=0;pnum<people.length;pnum++){
 	sampleItem=document.createElement("li");
-	sampleItem.innerHTML="<a href='#' id='cat_"+pnum+"_person'><span class='swatch' style='background-color:#3300FF'><img src='" +  + "'/></span><span class='category-title'>"+people[pnum].name+"</span></a>";
+	var marker="";
+	if(people[pnum].photo){
+		marker="<a href='#' id='cat_"+pnum+"_person' style='border:1px solid #000;-moz-border-radius:14px;-webkit-border-radius:14px;border-radius:14px;'><table><tr><td><img class='swatch' src='" + people[pnum].photo + "' style='height:40px;width:40px;'/></td>";
+		marker+="<td><span class='category-title' style='text-transform:none;'>"+people[pnum].name+"</span><br/>";
+		if(people[pnum].twitter){
+			marker+="<a href='http://twitter.com/" + people[pnum].twitter + "' target='_blank' style='display:inline;padding:0px;font-size:10pt;color:#0af;text-transform:none;font-weight:normal;border:none;line-height:12pt'>Tweet@</a> &mdash; ";
+		}
+		if(people[pnum].homepage){
+			marker+="<a href='" + people[pnum].homepage + "' target='_blank' style='display:inline;padding:0px;font-size:10pt;color:#0af;text-transform:none;font-weight:normal;border:none;line-height:12pt'>Homepage</a>";
+		}
+		marker+="</td><td><a href='" + people[pnum].lastLink + "' target='_blank' style='padding:0px;text-transform:none;border:none;line-height:12pt;color:#BC8B75;font-weight:bold;font-style:italic;margin-left:25px;'>" + people[pnum].lastArticle + "</a><br/><span style='padding:0px;text-transform:none;border:none;line-height:12pt;color:#BC8B75;margin-left:25px;'>" + people[pnum].lastTime + "</span></td>";
+		marker+="</tr></table></a>";
+	}
+	else{
+		marker="<a href='#' id='cat_"+pnum+"_person'><span class='swatch' style='background-color:#3300FF'></span><span class='category-title' style='text-transform:none;'>"+people[pnum].name+"</span></a>";
+	}
+	sampleItem.innerHTML=marker;
 	sampleItem.onclick=function(){
 		people(this);
 	}
@@ -128,31 +158,46 @@ try{
 	byClass("footer-credits")[0].innerHTML+="<br/>And the &nbsp;<a href='http:/" + "/kijani-map.appspot.com/'><img src='http:/" + "/kijani-map.appspot.com/credit.png' alt='Kijani' style='vertical-align:middle'></a>&nbsp; Plugin";
 }
 catch(e){
-	// for older and customized builds
-	document.write("<br/>And the &nbsp;<a href='http:/" + "/kijani-map.appspot.com/'><img src='http:/" + "/kijani-map.appspot.com/credit.png' alt='Kijani' style='vertical-align:middle'></a>&nbsp; Plugin");
+	/* for older and customized builds */
+	var footerDiv = document.createElement('div');
+	footerDiv.innerHTML = "<br/>And the &nbsp;<a href='http:/" + "/kijani-map.appspot.com/'><img src='http:/" + "/kijani-map.appspot.com/credit.png' alt='Kijani' style='vertical-align:middle'></a>&nbsp; Plugin";
+	document.body.appendChild(footerDiv);
 }
 
-/* prepend Facebook comments (?) to content-block-left
-byClass("content-block-left")[0].innerHTML = 'Facebook Commenting<hr/><hr/>' + byClass("content-block-left")[0].innerHTML; */
+/* add Facebook comments to bottom left square */
+try{
+	/* older Ushahidi and CrowdMap */
+	byClass("content-block-left")[0].innerHTML = 'Facebook Commenting<hr/><hr/>' + byClass("content-block-left")[0].innerHTML;
+}
+catch(e){
+	/* newer Ushahidi and CrowdMap uses content-block in place of content-block-left */
+	try{
+		fbContent = '<table><tr><td>';
+		fbContent += '<iframe src="//www.facebook.com/plugins/likebox.php?href=' + fbPage + '&amp;width=292&amp;height=558&amp;colorscheme=light&amp;show_faces=true&amp;border_color&amp;stream=true&amp;header=false&amp;appId=123994207657251" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:292px; height:558px;" allowTransparency="true"></iframe>';
+		fbContent += '</td><td>';
+		fbContent += '<iframe src="http://mapmeld.appspot.com/" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:100px; height:558px;" allowTransparency="true"></iframe>';
+		fbContent += '</td></tr></table>';
+		byClass("content-block")[0].innerHTML = fbContent;
+	}
+	catch(e){}
+}
 
-/* CROWDMAP test - add Facebook comments to renamed class area */
-byClass("content-block")[0].innerHTML = 'Facebook Commenting<hr/><hr/>' + byClass("content-block")[0].innerHTML;
+/* remove box around search tool */
+try{
+	byId("searchbox").style.border = "none";
+	byId("searchbox").style.borderTop = "none";
+	byId("searchbox").style.border = "none";
+	byId("searchbox").style.background = "transparent";
+	byId("searchbox").style.border = "none";
+	byId("searchbox").style.marginBottom = "20px";
+	byId("searchbox").style.marginTop = "-14px";
+}
+catch(e){}
 
-/* CROWDMAP test - remove box around search tool */
-byId("searchbox").style.border = "none";
-byId("searchbox").style.borderTop = "none";
-byId("searchbox").style.border = "none";
-byId("searchbox").style.background = "transparent";
-byId("searchbox").style.border = "none";
-byId("searchbox").style.marginBottom = "20px";
-byId("searchbox").style.marginTop = "-14px";
-
-/* remove the old style timeline */
+/* hide widgets surrounding the original timeline */
 byClass("slider-holder")[0].style.display = "none";
 byClass("tickLabels")[0].style.display = "none"; // and repeat this instead of redrawing tickmarks
-/* byId("graph").innerHTML = ""; */
-/* TODO : draw a new timeline based on a new model
-TODO : intercept timeline events, if they still get created */
+
 var events = [
 	{
 		name: "Mine opened",
@@ -181,18 +226,18 @@ var events = [
 	}
 ];
 function refreshGraph(startDate, endDate){
+	/* this.layer set to the reports layer */
 	this.layer = map.layers[3];
 
+	/* new timeline style should still respect category and date inputs */
 	var currentCat = gCategoryId;
-
-	// refresh graph
-	if (!currentCat || currentCat == '0')
-	{
+	if (!currentCat || currentCat == '0'){
 		currentCat = '0';
 	}
-
 	var startTime = new Date(startDate * 1000);
 	var endTime = new Date(endDate * 1000);
+	
+	/* count previous and future events for the storyboard layout */
 	var prevEvents = 0;
 	var futureEvents = 0;
 	for(var e=0; e<events.length; e++){
@@ -203,6 +248,8 @@ function refreshGraph(startDate, endDate){
 			futureEvents++;
 		}
 	}
+	
+	/* determine how much space to set aside before and after the main timeline for past and future events */
 	var centralWidth = 573 - Math.min(150, 20 * (prevEvents + futureEvents));
 	var centralOffset = Math.round((573 - centralWidth) * (prevEvents / (prevEvents + futureEvents)));
 	var centralTrail = Math.round((573 - centralWidth) * (futureEvents / (prevEvents + futureEvents)));
@@ -214,13 +261,14 @@ function refreshGraph(startDate, endDate){
 		endDate = (endTime.getTime() / 1000) + "";	
 	}
 
+	/* prepare the graph canvas */
 	var graphData = "";
 	byId("graph").children[0].width = byId("graph").children[0].width;
 	var ctx = byId("graph").children[0].getContext('2d');
-	// draw background
+	/* draw gray-blue background */
 	ctx.fillStyle = "#ECF1EF";
 	ctx.fillRect(0,0,573,150);
-	// draw gridlines
+	/* draw horizontal gridlines */
 	ctx.strokeStyle = "#CCC1FF";
 	ctx.lineWidth = 2;
 	ctx.moveTo(0,20);
@@ -238,10 +286,14 @@ function refreshGraph(startDate, endDate){
 	ctx.moveTo(0,140);
 	ctx.lineTo(573,140);
 	ctx.stroke();
-
+	
+	/* draw timeline with weekly totals (could revert to original which varies sampling rate based on start-to-finish timespan) */
 	$.getJSON(jsonEndpoint + "/timeline/"+currentCat+"?i=week", function(data) {
+		/* prepare data from the JSON response */
 		graphData = data[0];
 		var kigraphData = graphData.data;
+
+		/* determine maximum number of points per week */
 		var max = 1;
 		for(var gpt=0; gpt < kigraphData.length; gpt++){
 			if(kigraphData[gpt][1] * 1 > max){
@@ -249,7 +301,8 @@ function refreshGraph(startDate, endDate){
 			}
 		}
 		
-		// test to highlight
+		/* draw a line connecting all data points */
+		/* begin with the paler highlight part of the line */
 		ctx.beginPath();
 		ctx.strokeStyle = "#CC6C6C";
 		ctx.lineWidth = 2;
@@ -274,19 +327,20 @@ function refreshGraph(startDate, endDate){
 		}
 		ctx.lineTo(Math.round(573 - centralTrail), 134);
 		ctx.closePath();
-		// end highlight
+		/* end highlight line */
 		
-		// begin centerline
+		/* then draw the central red thread of the line */
 		ctx.beginPath();
 		ctx.strokeStyle = "#990000";
 		ctx.fillStyle = "#fff";
 		ctx.lineWidth = 3;
-		ctx.moveTo(Math.round(centralOffset), 150);
+		ctx.moveTo(Math.round(centralOffset), 150);		
 		for(var gpt=0; gpt < kigraphData.length; gpt++){
 			var timestamp = kigraphData[gpt][0];
 			var height = Math.round(150 - kigraphData[gpt][1] / max * 140);
 			ctx.lineTo( Math.round((timestamp - startTime) / msperpix), height );
-			// draw dark red circle
+
+			/* draw dark red circle at each data point */
 			ctx.moveTo( Math.round((timestamp - startTime) / msperpix), height );
 			ctx.arc(Math.round((timestamp - startTime) / msperpix), height, 4, 0, Math.PI*2, true);
 			ctx.moveTo( Math.round((timestamp - startTime) / msperpix), height );
@@ -296,7 +350,9 @@ function refreshGraph(startDate, endDate){
 		ctx.stroke();
 		ctx.fill();
 		ctx.closePath();
+		/* end the central red thread line */
 
+		/* past events */
 		ctx.beginPath();
 		ctx.strokeStyle = "#6CCC6C";
 		ctx.lineWidth = 5;
@@ -306,8 +362,7 @@ function refreshGraph(startDate, endDate){
 			ctx.moveTo(20 * e + 5, 0);
 			ctx.lineTo(20 * e + 5, 150);
 		}
-		// future events
-		ctx.strokeStyle = "#6CCC6C";
+		/* future events */
 		ctx.lineWidth = 5;
 		for(var e=events.length-1;e>=prevEvents;e--){
 			ctx.moveTo(563 - 20 * (events.length - e - 1), 0);
@@ -327,6 +382,7 @@ function refreshGraph(startDate, endDate){
 		allGraphData = data[0];
 	});
 }
+/* draw the new, reprogrammed graph */
 var startDate = $("#startDate").val();
 var endDate = $("#endDate").val();						
 refreshGraph(startDate, endDate);
@@ -341,4 +397,16 @@ for(var c=0;c<CIcandidates.length; c++){
 		}
 	}
 }
+
+/* remove "other deployments" segment, if it exists */
+var CIcandidates = byClass("cat-filters");
+for(var c=0;c<CIcandidates.length; c++){
+	if(CIcandidates[c].children != null){
+		if(CIcandidates[c].children[0].innerHTML.indexOf("Other Deployments") > -1){
+			CIcandidates[c].style.display = "none";
+			break;
+		}
+	}
+}
+
 void(0);
